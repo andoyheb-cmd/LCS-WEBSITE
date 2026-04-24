@@ -5,7 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lucban Christian School — Official Website</title>
   <meta name="description" content="Lucban Christian School, Inc. (LCS) — A Christ-centered K–JHS institution in Lucban, Quezon, Philippines. Established 1993.">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- ═══ PRECONNECTS (warm up external connections early) ═══ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://www.gstatic.com">
+  <link rel="preconnect" href="https://firestore.googleapis.com">
+
+  <!-- ═══ PRELOAD hero image (above the fold, load ASAP) ═══ -->
+  <link rel="preload" as="image" href="building.jpg">
+
+  <!-- ═══ NON-BLOCKING FONTS (trimmed to only used weights) ═══ -->
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Raleway:wght@400;600;700&display=swap"
+    onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Raleway:wght@400;600;700&display=swap">
+  </noscript>
+
+  <!-- ═══ STYLESHEET ═══ -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,7 +35,7 @@
 <nav id="main-nav">
   <a href="#hero" class="nav-brand">
     <div class="nav-logo">
-      <img src="logo.png" alt="Lucban Christian School Logo">
+      <img src="logo.png" alt="Lucban Christian School Logo" width="60" height="60">
     </div>
     <div class="nav-name">
       Lucban Christian School
@@ -30,7 +49,7 @@
       <li><a href="#contact">Contact &amp; Inquiry</a></li>
     </ul>
     <div class="nav-jhs-logo">
-      <img src="lcs-jhs.png" alt="LCS Junior High School">
+      <img src="lcs-jhs.png" alt="LCS Junior High School" width="60" height="60" loading="lazy">
     </div>
   </div>
   <button class="hamburger" id="hamburger" aria-label="Toggle menu">
@@ -48,7 +67,8 @@
 <section id="hero">
   <div class="hero-bg"></div>
   <div class="hero-building">
-    <img src="building.jpg" alt="Lucban Christian School Building">
+    <!-- No lazy load — this is above the fold -->
+    <img src="building.jpg" alt="Lucban Christian School Building" width="1200" height="600">
   </div>
   <svg class="hero-cross" width="340" height="480" viewBox="0 0 340 480" fill="none">
     <rect x="140" y="0" width="60" height="480" fill="white"/>
@@ -63,8 +83,8 @@
       non-profit church mission school of the Reformed Church in the Philippines.
     </p>
     <div class="hero-banner-img">
-      <img src="banner.png" alt="Your CHILD Road to SUCCESS begin at LCS!">
-      <img src="border.png" alt="Decorative border" class="hero-border-img">
+      <img src="banner.png" alt="Your CHILD Road to SUCCESS begin at LCS!" width="600" height="60" loading="lazy">
+      <img src="border.png" alt="" class="hero-border-img" width="800" height="40" loading="lazy" aria-hidden="true">
     </div>
     <div class="hero-actions">
       <a href="#programs" class="btn-outline">
@@ -389,27 +409,27 @@
     <div class="footer-logos-label">Affiliations &amp; Recognitions</div>
     <div class="footer-logos-row">
       <div class="footer-logo-item">
-        <img src="deped.jpg" alt="Department of Education">
+        <img src="deped.jpg" alt="Department of Education" width="80" height="80" loading="lazy">
         <span>DepEd</span>
       </div>
       <div class="footer-logo-item">
-        <img src="deped-quezon.jpg" alt="DepEd Quezon">
+        <img src="deped-quezon.jpg" alt="DepEd Quezon" width="80" height="80" loading="lazy">
         <span>DepEd Quezon</span>
       </div>
       <div class="footer-logo-item">
-        <img src="peac.jpg" alt="PEAC">
+        <img src="peac.jpg" alt="PEAC" width="80" height="80" loading="lazy">
         <span>PEAC</span>
       </div>
       <div class="footer-logo-item">
-        <img src="rcpi.jpg" alt="Lucban Christian Reformed Church – RCPI">
+        <img src="rcpi.jpg" alt="Lucban Christian Reformed Church – RCPI" width="80" height="80" loading="lazy">
         <span>RCPI</span>
       </div>
       <div class="footer-logo-item">
-        <img src="ixthus.jpg" alt="IXΘUS">
+        <img src="ixthus.jpg" alt="IXΘUS" width="80" height="80" loading="lazy">
         <span>IXΘUS</span>
       </div>
       <div class="footer-logo-item">
-        <img src="lcs-jhs.png" alt="LCS Junior High School">
+        <img src="lcs-jhs.png" alt="LCS Junior High School" width="80" height="80" loading="lazy">
         <span>LCS – JHS</span>
       </div>
     </div>
@@ -446,22 +466,13 @@
 
 
 <!-- ══════════════════════════════════════════════════════════
-     FIREBASE
+     SCRIPTS — all deferred so they never block rendering
+     Load order is guaranteed: app → firestore → init → main
 ══════════════════════════════════════════════════════════ -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBZ9LeFx7QGZDYNJq7gfDnYtWQ3S7DxuQk",
-    authDomain: "lcs-website-52bdf.firebaseapp.com",
-    projectId: "lcs-website-52bdf",
-    storageBucket: "lcs-website-52bdf.firebasestorage.app",
-    messagingSenderId: "440967467072",
-    appId: "1:440967467072:web:1290825ccb826c1c634fa5"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-</script>
-<script src="main.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script defer src="firebase-init.js"></script>
+<script defer src="main.js"></script>
+
 </body>
 </html>
