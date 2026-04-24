@@ -352,7 +352,7 @@ function renderTable() {
           <div class="td-name">${esc(s.data['first-name'])} ${esc(s.data['last-name'])}</div>
           <div class="td-email">${esc(s.data.phone || '')}</div>
         </td>
-        <td><div class="td-email">${esc(s.data.email || '')}</div></td>
+        <td><div class="td-email">${s.data.email ? `<a href="https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(s.data.email)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline dotted;cursor:pointer" onclick="event.stopPropagation()">${esc(s.data.email)}</a>` : '—'}</div></td>
         <td><span class="badge badge-${catKey}">${esc(cat)}</span></td>
         <td><div class="td-subject" title="${esc(s.data.subject || '')}">${esc(s.data.subject || '—')}</div></td>
         <td><div class="td-email">${esc(s.data['grade-level'] || '—')}</div></td>
@@ -430,7 +430,7 @@ function openModal(id) {
     <div class="modal-field" style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
       <div>
         <div class="modal-field-label">Email</div>
-        <div class="modal-field-value"><a href="mailto:${esc(s.data.email)}">${esc(s.data.email || '—')}</a></div>
+        <div class="modal-field-value"><a href="https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(s.data.email || '')}&su=${encodeURIComponent('Re: ' + (s.data.subject || 'Your Inquiry'))}" target="_blank" rel="noopener">${esc(s.data.email || '—')}</a></div>
       </div>
       <div>
         <div class="modal-field-label">Phone</div>
