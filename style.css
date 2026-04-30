@@ -1253,3 +1253,204 @@ footer {
   .hero-actions { flex-direction: column; align-items: flex-start; }
   .modal-program-footer { flex-direction: column; }
 }
+
+/* ══════════════════════════════════════════════════════════
+   WHY ENROLL AT LCS
+══════════════════════════════════════════════════════════ */
+#why-lcs {
+  background: var(--navy);
+  color: var(--white);
+  padding: 120px 6% 100px;
+}
+
+.why-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 56px;
+}
+
+#why-lcs .section-label {
+  color: var(--gold);
+}
+
+#why-lcs .section-title {
+  color: var(--white);
+}
+
+.why-intro {
+  color: rgba(255,255,255,0.75);
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-top: 16px;
+}
+
+/* ESC Banner */
+.why-esc-banner {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+  color: var(--navy);
+  border-radius: 16px;
+  padding: 28px 40px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  max-width: 900px;
+  margin: 0 auto 72px;
+  flex-wrap: wrap;
+}
+
+.esc-badge {
+  background: var(--navy);
+  color: var(--gold);
+  font-family: 'Raleway', sans-serif;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 8px 18px;
+  border-radius: 40px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.esc-text {
+  flex: 1;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.esc-amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.esc-bonus {
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.btn-esc {
+  background: var(--navy);
+  color: var(--gold);
+  text-decoration: none;
+  font-family: 'Raleway', sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  letter-spacing: 0.06em;
+  padding: 12px 26px;
+  border-radius: 8px;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-esc:hover {
+  background: var(--navy-light);
+  color: var(--gold-light);
+}
+
+/* 10-reason grid */
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 28px;
+  max-width: 1200px;
+  margin: 0 auto 72px;
+}
+
+.why-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(201,168,76,0.18);
+  border-radius: 16px;
+  padding: 36px 32px;
+  position: relative;
+  transition: background 0.25s, border-color 0.25s, transform 0.25s;
+}
+
+.why-card:hover {
+  background: rgba(255,255,255,0.09);
+  border-color: rgba(201,168,76,0.45);
+  transform: translateY(-4px);
+}
+
+.why-num {
+  font-family: 'Raleway', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: var(--gold);
+  opacity: 0.7;
+  margin-bottom: 12px;
+}
+
+.why-icon {
+  font-size: 2rem;
+  margin-bottom: 14px;
+  line-height: 1;
+}
+
+.why-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 12px;
+  line-height: 1.35;
+}
+
+.why-desc {
+  font-size: 0.92rem;
+  color: rgba(255,255,255,0.68);
+  line-height: 1.75;
+}
+
+/* CTA */
+.why-cta {
+  text-align: center;
+  padding-top: 16px;
+}
+
+.why-cta p {
+  font-size: 1.3rem;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 28px;
+}
+
+.why-cta em {
+  color: var(--gold);
+  font-style: italic;
+}
+
+.why-cta .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--gold);
+  color: var(--navy);
+  font-family: 'Raleway', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 16px 36px;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+  cursor: pointer;
+  border: none;
+}
+
+.why-cta .btn-primary svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.why-cta .btn-primary:hover {
+  background: var(--gold-light);
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  #why-lcs { padding: 80px 5% 72px; }
+  .why-esc-banner { flex-direction: column; align-items: flex-start; gap: 16px; padding: 24px 24px; }
+  .why-grid { grid-template-columns: 1fr; gap: 20px; }
+}
