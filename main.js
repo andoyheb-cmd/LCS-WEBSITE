@@ -276,11 +276,102 @@ window.prefillInquiry = function(programName) {
 
 /* ══════════════════════════════════════════════════════════
    INQUIRY FORM SUBMISSION (FIREBASE FIRESTORE)
+   Step 1 → Review modal   Step 2 → Confirm & send
 ══════════════════════════════════════════════════════════ */
 (function initInquiryForm() {
   const submitBtn = document.getElementById('iq-submit');
   if (!submitBtn) return;
 
+  /* ── Build the review modal once ── */
+  const reviewOverlay = document.createElement('div');
+  reviewOverlay.id = 'iq-review-overlay';
+  Object.assign(reviewOverlay.style, {
+    display:         'none',
+    position:        'fixed',
+    inset:           '0',
+    zIndex:          '10000',
+    background:      'rgba(10,20,45,0.82)',
+    backdropFilter:  'blur(4px)',
+    overflowY:       'auto',
+    padding:         '40px 16px',
+    boxSizing:       'border-box',
+  });
+
+  reviewOverlay.innerHTML = `
+    <div id="iq-review-box" style="
+      max-width:560px;margin:0 auto;
+      background:#0f2044;color:#e8dfc8;
+      border:1px solid rgba(201,168,76,0.35);
+      border-radius:4px;padding:36px 32px 28px;
+      font-family:'Raleway',sans-serif;
+      box-shadow:0 20px 60px rgba(0,0,0,0.6);
+    ">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+        <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:#c9a84c;flex-shrink:0"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+        <h3 style="margin:0;font-size:1.1rem;font-family:'Playfair Display',serif;color:#c9a84c;letter-spacing:.04em;">
+          Review Your Inquiry
+        </h3>
+      </div>
+      <p style="margin:0 0 20px;font-size:.8rem;opacity:.7;line-height:1.6;">
+        Please review the details below before sending. You can go back to make changes.
+      </p>
+      <div id="iq-review-fields" style="display:grid;gap:10px;margin-bottom:28px;"></div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button id="iq-review-back" style="
+          flex:1;min-width:120px;padding:12px 20px;
+          background:transparent;color:#c9a84c;
+          border:1px solid rgba(201,168,76,0.5);
+          border-radius:2px;cursor:pointer;
+          font-family:'Raleway',sans-serif;font-size:.78rem;font-weight:600;
+          letter-spacing:.08em;text-transform:uppercase;
+          transition:background .2s;
+        ">← Go Back &amp; Edit</button>
+        <button id="iq-review-confirm" style="
+          flex:2;min-width:160px;padding:12px 24px;
+          background:#c9a84c;color:#0f2044;
+          border:none;border-radius:2px;cursor:pointer;
+          font-family:'Raleway',sans-serif;font-size:.78rem;font-weight:700;
+          letter-spacing:.08em;text-transform:uppercase;
+          display:flex;align-items:center;justify-content:center;gap:8px;
+          transition:opacity .2s;
+        ">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#0f2044"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          Confirm &amp; Send
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(reviewOverlay);
+
+  const reviewFields  = document.getElementById('iq-review-fields');
+  const backBtn       = document.getElementById('iq-review-back');
+  const confirmBtn    = document.getElementById('iq-review-confirm');
+
+  function closeReview() {
+    reviewOverlay.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  backBtn.addEventListener('click', closeReview);
+  reviewOverlay.addEventListener('click', function(e) {
+    if (e.target === reviewOverlay) closeReview();
+  });
+
+  /* ── Helper: render one labelled row ── */
+  function reviewRow(label, value) {
+    if (!value) return '';
+    return `
+      <div style="
+        background:rgba(255,255,255,0.04);
+        border-left:2px solid rgba(201,168,76,0.4);
+        padding:10px 14px;border-radius:2px;
+      ">
+        <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:#c9a84c;margin-bottom:3px;">${label}</div>
+        <div style="font-size:.88rem;line-height:1.5;word-break:break-word;">${value}</div>
+      </div>`;
+  }
+
+  /* ── Step 1: validate → show review ── */
   submitBtn.addEventListener('click', function() {
     const firstName  = (document.getElementById('iq-firstname').value || '').trim();
     const lastName   = (document.getElementById('iq-lastname').value  || '').trim();
@@ -291,69 +382,70 @@ window.prefillInquiry = function(programName) {
     const subject    = (document.getElementById('iq-subject').value   || '').trim();
     const message    = (document.getElementById('iq-message').value   || '').trim();
 
-    const activeCat   = document.querySelector('.cat-btn.active');
-    const catKey      = activeCat ? activeCat.dataset.cat : 'other';
-    const catLabels   = {
-      tuition:    'Tuition & Fees',
-      academics:  'Academics',
-      scholarship:'Scholarship',
-      other:      'Other',
-    };
-    const category = catLabels[catKey] || 'Other';
+    const activeCat = document.querySelector('.cat-btn.active');
+    const catKey    = activeCat ? activeCat.dataset.cat : 'other';
+    const catLabels = { tuition:'Tuition & Fees', academics:'Academics', scholarship:'Scholarship', other:'Other' };
+    const category  = catLabels[catKey] || 'Other';
 
     // Validation
-    if (!firstName || !lastName) {
-      showToast('Please enter your full name.', 'error'); return;
-    }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      showToast('Please enter a valid email address.', 'error'); return;
-    }
-    if (!subject) {
-      showToast('Please enter a subject for your inquiry.', 'error'); return;
-    }
-    if (!message) {
-      showToast('Please write your message before submitting.', 'error'); return;
-    }
+    if (!firstName || !lastName) { showToast('Please enter your full name.', 'error'); return; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Please enter a valid email address.', 'error'); return; }
+    if (!subject) { showToast('Please enter a subject for your inquiry.', 'error'); return; }
+    if (!message) { showToast('Please write your message before submitting.', 'error'); return; }
 
-    // Submit to Firebase
-    submitBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:var(--navy);animation:spin 1s linear infinite"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg> Submitting…';
-    submitBtn.disabled = true;
+    // Populate review modal
+    reviewFields.innerHTML =
+      reviewRow('Full Name',      `${firstName} ${lastName}`) +
+      reviewRow('Email',          email) +
+      reviewRow('Phone',          phone || '—') +
+      reviewRow('I am a',         relation || '—') +
+      reviewRow('Grade / Level',  gradeLevel || '—') +
+      reviewRow('Category',       category) +
+      reviewRow('Subject',        subject) +
+      reviewRow('Message',        message.replace(/\n/g, '<br>'));
 
-    db.collection('inquiries').add({
-      firstName,
-      lastName,
-      email,
-      phone,
-      relation,
-      gradeLevel,
-      category,
-      subject,
-      message,
-      read: false,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    })
-    .then(() => {
-      submitBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:var(--navy)"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> Submit Inquiry';
-      submitBtn.disabled = false;
+    reviewOverlay.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    reviewOverlay.scrollTop = 0;
 
-      // Clear form
-      ['iq-firstname','iq-lastname','iq-email','iq-phone','iq-subject','iq-message'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = '';
+    /* ── Step 2: confirm → submit to Firebase ── */
+    confirmBtn.onclick = function() {
+      confirmBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#0f2044;animation:spin 1s linear infinite"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg> Sending…';
+      confirmBtn.disabled = true;
+      backBtn.disabled    = true;
+
+      db.collection('inquiries').add({
+        firstName, lastName, email, phone, relation, gradeLevel,
+        category, subject, message,
+        read:      false,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      })
+      .then(() => {
+        closeReview();
+        confirmBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#0f2044"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> Confirm &amp; Send';
+        confirmBtn.disabled = false;
+        backBtn.disabled    = false;
+
+        // Clear form
+        ['iq-firstname','iq-lastname','iq-email','iq-phone','iq-subject','iq-message'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = '';
+        });
+        document.getElementById('iq-relation').selectedIndex = 0;
+        document.getElementById('iq-level').selectedIndex    = 0;
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector('.cat-btn[data-cat="tuition"]').classList.add('active');
+
+        showToast('✅ Inquiry submitted! We\'ll respond within 1–2 business days.', 'success');
+      })
+      .catch(err => {
+        console.error('Firestore error:', err);
+        confirmBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#0f2044"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> Confirm &amp; Send';
+        confirmBtn.disabled = false;
+        backBtn.disabled    = false;
+        showToast('Submission failed. Please try again or contact us directly.', 'error');
       });
-      document.getElementById('iq-relation').selectedIndex = 0;
-      document.getElementById('iq-level').selectedIndex = 0;
-      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-      document.querySelector('.cat-btn[data-cat="tuition"]').classList.add('active');
-
-      showToast('✅ Inquiry submitted! We\'ll respond within 1–2 business days.', 'success');
-    })
-    .catch(err => {
-      console.error('Firestore error:', err);
-      submitBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:var(--navy)"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> Submit Inquiry';
-      submitBtn.disabled = false;
-      showToast('Submission failed. Please try again or contact us directly.', 'error');
-    });
+    };
   });
 })();
 
