@@ -499,6 +499,41 @@ function showToast(message, type) {
 }
 
 /* ══════════════════════════════════════════════════════════
+   PHONE NUMBER — ALLOW DIGITS, +, -, SPACES, ( ) ONLY
+══════════════════════════════════════════════════════════ */
+(function initPhoneFilter() {
+  const phoneInput = document.getElementById('iq-phone');
+  if (!phoneInput) return;
+
+  phoneInput.addEventListener('input', function() {
+    // Strip anything that isn't a digit, +, -, space, (, or )
+    const cleaned = this.value.replace(/[^\d\+\-\s\(\)]/g, '');
+    if (this.value !== cleaned) this.value = cleaned;
+  });
+
+  phoneInput.addEventListener('keydown', function(e) {
+    // Allow: Backspace, Delete, Tab, Escape, Enter, Arrow keys, Home, End
+    const allowed = ['Backspace','Delete','Tab','Escape','Enter',
+                     'ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End'];
+    if (allowed.includes(e.key)) return;
+    // Allow: Ctrl/Cmd + A/C/V/X
+    if ((e.ctrlKey || e.metaKey) && ['a','c','v','x'].includes(e.key.toLowerCase())) return;
+    // Allow valid phone characters
+    if (/[\d\+\-\s\(\)]/.test(e.key)) return;
+    // Block everything else
+    e.preventDefault();
+  });
+
+  // Also clean on paste
+  phoneInput.addEventListener('paste', function(e) {
+    e.preventDefault();
+    const pasted = (e.clipboardData || window.clipboardData).getData('text');
+    const cleaned = pasted.replace(/[^\d\+\-\s\(\)]/g, '').slice(0, 15);
+    this.value = cleaned;
+  });
+})();
+
+/* ══════════════════════════════════════════════════════════
    FOOTER YEAR
 ══════════════════════════════════════════════════════════ */
 (function setFooterYear() {
