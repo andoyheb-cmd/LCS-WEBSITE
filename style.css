@@ -1454,3 +1454,116 @@ footer {
   .why-esc-banner { flex-direction: column; align-items: flex-start; gap: 16px; padding: 24px 24px; }
   .why-grid { grid-template-columns: 1fr; gap: 20px; }
 }
+
+/* ══════════════════════════════════════════════════════════
+   IMPROVEMENTS — additive only, nothing removed
+══════════════════════════════════════════════════════════ */
+
+/* ── 1. FIX: Scroll offset for fixed nav (96px tall)
+        Without this, anchor links hide content under the navbar. ── */
+#profile,
+#why-lcs,
+#programs,
+#contact {
+  scroll-margin-top: 96px;
+}
+
+/* ── 2. Brand selection colors ── */
+::selection {
+  background: var(--gold);
+  color: var(--navy);
+}
+
+/* ── 3. Accessible focus-visible outlines
+        Replaces invisible browser defaults while keeping mouse use clean. ── */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* ── 4. Respect prefers-reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── 5. Staggered reveal delays — why-cards ── */
+.why-card:nth-child(1)  { transition-delay: 0.05s; }
+.why-card:nth-child(2)  { transition-delay: 0.10s; }
+.why-card:nth-child(3)  { transition-delay: 0.15s; }
+.why-card:nth-child(4)  { transition-delay: 0.20s; }
+.why-card:nth-child(5)  { transition-delay: 0.25s; }
+.why-card:nth-child(6)  { transition-delay: 0.30s; }
+.why-card:nth-child(7)  { transition-delay: 0.35s; }
+.why-card:nth-child(8)  { transition-delay: 0.40s; }
+.why-card:nth-child(9)  { transition-delay: 0.45s; }
+.why-card:nth-child(10) { transition-delay: 0.50s; }
+
+/* ── 6. Staggered reveal delays — program cards ── */
+.program-card:nth-child(1) { transition-delay: 0.05s; }
+.program-card:nth-child(2) { transition-delay: 0.12s; }
+.program-card:nth-child(3) { transition-delay: 0.19s; }
+.program-card:nth-child(4) { transition-delay: 0.26s; }
+.program-card:nth-child(5) { transition-delay: 0.33s; }
+
+/* ── 7. Input focus glow + invalid visual feedback ── */
+.inquiry-form input:focus,
+.inquiry-form select:focus,
+.inquiry-form textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.18);
+  outline: none;
+}
+
+.inquiry-form input:invalid:not(:placeholder-shown),
+.inquiry-form textarea:invalid:not(:placeholder-shown) {
+  border-color: #c0392b;
+  box-shadow: 0 0 0 3px rgba(192,57,43,0.12);
+}
+
+/* ── 8. Hover lift on contact info items ── */
+.contact-item {
+  transition: transform 0.2s ease, background 0.2s ease;
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.contact-item:hover {
+  transform: translateY(-3px);
+  background: rgba(255,255,255,0.04);
+}
+
+/* ── 9. Hover subtlety on about meta items ── */
+.meta-item {
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.meta-item:hover {
+  background: var(--gold-pale);
+  border-left-color: var(--navy);
+}
+
+/* ── 10. Smoother scroll-hint text fade ── */
+.scroll-hint {
+  animation: fadeUp 1s 1s ease both;
+}

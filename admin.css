@@ -645,3 +645,441 @@
       .login-box { padding: 36px 24px; }
       .search-box input { width: 130px; }
     }
+
+/* ══════════════════════════════════════════════════════════
+   IMPROVEMENTS — additive only, nothing removed
+══════════════════════════════════════════════════════════ */
+
+/* ── 1. FIX: Scroll offset for sticky topbar (70px tall) ── */
+#dashboard,
+.dash-main {
+  scroll-margin-top: 70px;
+}
+
+/* ── 2. Brand selection colors ── */
+::selection {
+  background: var(--gold);
+  color: var(--navy);
+}
+
+/* ── 3. Accessible focus-visible outlines ── */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* ── 4. Respect prefers-reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── 5. Zebra striping on table rows for readability ── */
+tbody tr:nth-child(even) {
+  background: #faf8f3;
+}
+
+tbody tr:nth-child(even):hover {
+  background: #f7f4ed;
+}
+
+/* ── 6. Mobile table: horizontal scroll shadow cue
+        Users on phones see a fade-right edge to hint at more columns. ── */
+.table-wrap {
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .table-wrap::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 40px; height: 100%;
+    background: linear-gradient(to left, rgba(255,255,255,0.9), transparent);
+    pointer-events: none;
+  }
+}
+
+/* ── 7. Action button tooltip via aria-label ── */
+.action-btn[aria-label] {
+  position: relative;
+}
+
+.action-btn[aria-label]:hover::after {
+  content: attr(aria-label);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background: var(--navy);
+  color: var(--gold-light);
+  font-family: 'Raleway', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ── 8. Stat card hover lift ── */
+.stat-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(15,32,68,0.1);
+}
+
+/* ── 9. Modal open: smoother scroll lock ── */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* ── 10. Filter button active state — clearer ring ── */
+.filter-btn.active {
+  box-shadow: inset 0 0 0 1px rgba(201,168,76,0.4);
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   NEW FEATURES — Chart, Reply, Archive, Dark Mode
+══════════════════════════════════════════════════════════ */
+
+/* ── Dark mode toggle button ── */
+.dark-toggle-btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  cursor: pointer;
+  border-radius: 50%;
+  color: rgba(255,255,255,0.6);
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+
+.dark-toggle-btn:hover {
+  background: rgba(201,168,76,0.15);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.dark-toggle-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  display: block;
+}
+
+/* ── Analytics chart section ── */
+.chart-section {
+  background: var(--white);
+  border: 1px solid var(--border);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+
+.chart-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.chart-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  color: var(--navy);
+}
+
+.chart-range-group {
+  display: flex;
+  gap: 6px;
+}
+
+.chart-range-btn {
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--text-muted);
+  font-family: 'Raleway', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chart-range-btn.active,
+.chart-range-btn:hover {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: var(--gold-light);
+}
+
+.chart-wrap {
+  height: 150px;
+  position: relative;
+}
+
+/* ── Archived filter button ── */
+.filter-btn-archived {
+  border-style: dashed;
+}
+
+/* ── Archived badge in table ── */
+.badge-archived {
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 0.55rem;
+  padding: 2px 6px;
+}
+
+/* ── Archive modal button ── */
+.modal-btn-archive {
+  background: #f0f4ff;
+  color: #3b5bdb;
+}
+
+.modal-btn-archive:hover {
+  background: #dce4ff;
+}
+
+/* ── Reply toggle modal button ── */
+.modal-btn-reply {
+  background: var(--green-bg);
+  color: var(--green);
+}
+
+.modal-btn-reply:hover {
+  background: #c0eac8;
+}
+
+/* ── Reply panel ── */
+.reply-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  background: #f7f5f0;
+  border-top: 1px solid var(--border);
+}
+
+.reply-panel.open {
+  max-height: 260px;
+  padding: 20px 28px;
+}
+
+.reply-panel-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.reply-textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--text-dark);
+  font-family: 'Crimson Pro', serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  padding: 10px 14px;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.reply-textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.15);
+}
+
+.reply-panel-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  gap: 12px;
+}
+
+.reply-note {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] body {
+  background: #121826;
+  color: rgba(255,255,255,0.82);
+}
+
+[data-theme="dark"] .stat-card {
+  background: #1a2340;
+  border-color: rgba(201,168,76,0.15);
+}
+
+[data-theme="dark"] .stat-card-num  { color: var(--gold-light); }
+[data-theme="dark"] .stat-card-label { color: rgba(255,255,255,0.38); }
+
+[data-theme="dark"] .stat-card:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+}
+
+[data-theme="dark"] .chart-section {
+  background: #1a2340;
+  border-color: rgba(255,255,255,0.08);
+}
+
+[data-theme="dark"] .chart-title { color: var(--gold-light); }
+
+[data-theme="dark"] .chart-range-btn {
+  background: transparent;
+  border-color: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.45);
+}
+
+[data-theme="dark"] .chart-range-btn.active,
+[data-theme="dark"] .chart-range-btn:hover {
+  background: var(--navy);
+  border-color: var(--gold);
+  color: var(--gold-light);
+}
+
+[data-theme="dark"] .toolbar h2 { color: var(--gold-light); }
+
+[data-theme="dark"] .filter-btn {
+  background: transparent;
+  border-color: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.5);
+}
+
+[data-theme="dark"] .filter-btn.active,
+[data-theme="dark"] .filter-btn:hover {
+  background: var(--navy);
+  border-color: var(--gold);
+  color: var(--gold-light);
+}
+
+[data-theme="dark"] .search-box {
+  background: #1a2340;
+  border-color: rgba(255,255,255,0.1);
+}
+
+[data-theme="dark"] .search-box input {
+  color: rgba(255,255,255,0.8);
+}
+
+[data-theme="dark"] .search-box svg { fill: rgba(255,255,255,0.3); }
+
+[data-theme="dark"] .export-btn {
+  background: var(--navy-mid);
+}
+
+[data-theme="dark"] .table-wrap {
+  background: #1a2340;
+  border-color: rgba(255,255,255,0.08);
+}
+
+[data-theme="dark"] tbody tr {
+  border-color: rgba(255,255,255,0.06);
+}
+
+[data-theme="dark"] tbody tr:nth-child(even) {
+  background: rgba(255,255,255,0.025);
+}
+
+[data-theme="dark"] tbody tr:hover {
+  background: rgba(201,168,76,0.07);
+}
+
+[data-theme="dark"] tbody td      { color: rgba(255,255,255,0.62); }
+[data-theme="dark"] .td-name      { color: rgba(255,255,255,0.9); }
+[data-theme="dark"] .td-email     { color: rgba(255,255,255,0.38); }
+[data-theme="dark"] .td-date      { color: rgba(255,255,255,0.32); }
+
+[data-theme="dark"] .modal {
+  background: #1a2340;
+}
+
+[data-theme="dark"] .modal-field {
+  border-color: rgba(255,255,255,0.08);
+}
+
+[data-theme="dark"] .modal-field-value {
+  color: rgba(255,255,255,0.82);
+}
+
+[data-theme="dark"] .modal-field-value a {
+  color: var(--gold-light);
+}
+
+[data-theme="dark"] .modal-actions {
+  background: #141d33;
+  border-color: rgba(255,255,255,0.08);
+}
+
+[data-theme="dark"] .reply-panel {
+  background: #141d33;
+  border-color: rgba(255,255,255,0.08);
+}
+
+[data-theme="dark"] .reply-textarea {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.8);
+}
+
+[data-theme="dark"] .reply-textarea::placeholder {
+  color: rgba(255,255,255,0.25);
+}
+
+[data-theme="dark"] .reply-note { color: rgba(255,255,255,0.35); }
+
+[data-theme="dark"] .modal-btn-archive {
+  background: rgba(59,91,219,0.15);
+  color: #a5b4fc;
+}
+
+[data-theme="dark"] .modal-btn-reply {
+  background: rgba(45,106,79,0.2);
+  color: #6ee7a0;
+}
+
+[data-theme="dark"] .modal-btn-danger {
+  background: rgba(155,35,53,0.2);
+  color: #fca5a5;
+}
+
+[data-theme="dark"] .setup-notice {
+  background: rgba(146,96,10,0.12);
+  border-color: rgba(201,168,76,0.25);
+}
+
+[data-theme="dark"] .empty-state svg { fill: rgba(255,255,255,0.1); }
+[data-theme="dark"] .empty-state p   { color: rgba(255,255,255,0.35); }
+
+[data-theme="dark"] .action-btn { color: rgba(255,255,255,0.35); }
+[data-theme="dark"] .action-btn:hover { color: var(--gold-light); }

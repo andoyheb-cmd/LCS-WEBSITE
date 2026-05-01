@@ -55,6 +55,15 @@
     </div>
     <div class="topbar-right">
       <div class="topbar-admin">Signed in as <strong>Administrator</strong></div>
+
+      <!-- ── NEW: Dark mode toggle ── -->
+      <button class="dark-toggle-btn" id="dark-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+        <!-- Sun icon (shown in dark mode) -->
+        <svg id="icon-sun" viewBox="0 0 24 24" style="display:none"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 00-1.41 0 .996.996 0 000 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 000-1.41l-1.06-1.06zm1.06-12.37l-1.06 1.06a.996.996 0 000 1.41c.39.39 1.03.39 1.41 0l1.06-1.06a.996.996 0 000-1.41-.99-.99-1.41 0zM7.05 18.36l-1.06 1.06a.996.996 0 000 1.41c.39.39 1.03.39 1.41 0l1.06-1.06a.996.996 0 000-1.41-.99-.99-1.41 0z"/></svg>
+        <!-- Moon icon (shown in light mode) -->
+        <svg id="icon-moon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 109 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 01-4.4 2.26 5.403 5.403 0 01-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+      </button>
+
       <button class="logout-btn" id="logout-btn">Sign Out</button>
     </div>
   </div>
@@ -83,11 +92,25 @@
       </div>
       <div class="stat-card">
         <div class="stat-card-num" id="stat-tuition">—</div>
-        <div class="stat-card-label">Tuition & Fees</div>
+        <div class="stat-card-label">Tuition &amp; Fees</div>
       </div>
       <div class="stat-card">
         <div class="stat-card-num" id="stat-today">—</div>
         <div class="stat-card-label">Today</div>
+      </div>
+    </div>
+
+    <!-- ── NEW: Analytics Chart ── -->
+    <div class="chart-section" id="chart-section">
+      <div class="chart-section-header">
+        <div class="chart-title">Submission Activity</div>
+        <div class="chart-range-group">
+          <button class="chart-range-btn active" data-days="14">14 days</button>
+          <button class="chart-range-btn" data-days="30">30 days</button>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="submissions-chart"></canvas>
       </div>
     </div>
 
@@ -101,6 +124,8 @@
           <button class="filter-btn" data-filter="tuition">Tuition</button>
           <button class="filter-btn" data-filter="academics">Academics</button>
           <button class="filter-btn" data-filter="scholarship">Scholarship</button>
+          <!-- ── NEW: Archived filter ── -->
+          <button class="filter-btn filter-btn-archived" data-filter="archived">Archived</button>
         </div>
       </div>
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
@@ -163,8 +188,28 @@
       </button>
     </div>
     <div class="modal-body" id="modal-body"></div>
+
+    <!-- ── NEW: Reply panel (collapsed by default) ── -->
+    <div class="reply-panel" id="reply-panel">
+      <div class="reply-panel-label">
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:var(--gold);flex-shrink:0"><path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/></svg>
+        Compose Reply
+      </div>
+      <textarea class="reply-textarea" id="reply-textarea" rows="4" placeholder="Type your reply to this inquiry…"></textarea>
+      <div class="reply-panel-footer">
+        <span class="reply-note">Opens Gmail with your reply pre-filled</span>
+        <button class="modal-btn modal-btn-primary" id="reply-send">
+          Send via Gmail
+        </button>
+      </div>
+    </div>
+
     <div class="modal-actions">
       <button class="modal-btn modal-btn-primary" id="modal-mark-read">Mark as Read</button>
+      <!-- ── NEW: Archive button ── -->
+      <button class="modal-btn modal-btn-archive" id="modal-archive">Archive</button>
+      <!-- ── NEW: Reply toggle ── -->
+      <button class="modal-btn modal-btn-reply" id="modal-reply-toggle">↩ Reply</button>
       <button class="modal-btn modal-btn-danger" id="modal-delete">Delete</button>
     </div>
   </div>
@@ -173,6 +218,9 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<!-- Chart.js for analytics -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
 <script>
 'use strict';
 
@@ -199,10 +247,33 @@ const ADMIN_PASS = 'elyeshu@atenulozano';
    APP STATE
    ══════════════════════════════════════════════════════════ */
 let allSubmissions = [];
-let filtered = [];
-let activeFilter = 'all';
-let activeModalId = null;
-let unsubscribe = null;   // Firestore real-time listener
+let filtered       = [];
+let activeFilter   = 'all';
+let activeModalId  = null;
+let unsubscribe    = null;
+let submissionsChart = null;
+let chartDays      = 14;
+
+/* ══════════════════════════════════════════════════════════
+   DARK MODE
+   ══════════════════════════════════════════════════════════ */
+(function initDarkMode() {
+  const saved = localStorage.getItem('lcs-admin-theme');
+  if (saved === 'dark') applyDark(true);
+})();
+
+function applyDark(on) {
+  document.documentElement.setAttribute('data-theme', on ? 'dark' : 'light');
+  document.getElementById('icon-sun').style.display  = on ? 'block' : 'none';
+  document.getElementById('icon-moon').style.display = on ? 'none'  : 'block';
+}
+
+document.getElementById('dark-toggle').addEventListener('click', () => {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  applyDark(!isDark);
+  localStorage.setItem('lcs-admin-theme', isDark ? 'light' : 'dark');
+  if (submissionsChart) renderChart(chartDays);
+});
 
 /* ══════════════════════════════════════════════════════════
    LOGIN
@@ -230,6 +301,7 @@ function doLogin() {
 
 document.getElementById('logout-btn').addEventListener('click', () => {
   if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+  if (submissionsChart) { submissionsChart.destroy(); submissionsChart = null; }
   document.getElementById('dashboard').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('admin-pass').value = '';
@@ -239,7 +311,6 @@ document.getElementById('logout-btn').addEventListener('click', () => {
    LOAD SUBMISSIONS — Real-time listener from Firestore
    ══════════════════════════════════════════════════════════ */
 function loadSubmissions() {
-  // Show loading state
   document.getElementById('submissions-tbody').innerHTML = `
     <tr><td colspan="9">
       <div class="empty-state">
@@ -255,19 +326,20 @@ function loadSubmissions() {
         allSubmissions = snapshot.docs.map((doc, i) => {
           const d = doc.data();
           return {
-            id: doc.id,
-            number: i + 1,
-            read: d.read || false,
+            id:       doc.id,
+            number:   i + 1,
+            read:     d.read     || false,
+            archived: d.archived || false,  // ── NEW
             data: {
-              'first-name':        d.firstName  || '',
-              'last-name':         d.lastName   || '',
-              email:               d.email      || '',
-              phone:               d.phone      || '',
-              'inquiry-category':  d.category   || 'Other',
-              relation:            d.relation   || '',
-              'grade-level':       d.gradeLevel || '',
-              subject:             d.subject    || '',
-              message:             d.message    || '',
+              'first-name':       d.firstName  || '',
+              'last-name':        d.lastName   || '',
+              email:              d.email      || '',
+              phone:              d.phone      || '',
+              'inquiry-category': d.category   || 'Other',
+              relation:           d.relation   || '',
+              'grade-level':      d.gradeLevel || '',
+              subject:            d.subject    || '',
+              message:            d.message    || '',
             },
             created_at: d.createdAt ? d.createdAt.toDate().toISOString() : new Date().toISOString(),
           };
@@ -286,17 +358,113 @@ function loadSubmissions() {
    RENDER
    ══════════════════════════════════════════════════════════ */
 function renderAll() {
-  // Stats
   const today = new Date().toDateString();
-  document.getElementById('stat-total').textContent = allSubmissions.length;
-  document.getElementById('stat-new').textContent   = allSubmissions.filter(s => !s.read).length;
+  const active = allSubmissions.filter(s => !s.archived);
+  document.getElementById('stat-total').textContent = active.length;
+  document.getElementById('stat-new').textContent   = active.filter(s => !s.read).length;
   document.getElementById('stat-tuition').textContent =
-    allSubmissions.filter(s => (s.data['inquiry-category'] || '').toLowerCase().includes('tuition')).length;
+    active.filter(s => (s.data['inquiry-category'] || '').toLowerCase().includes('tuition')).length;
   document.getElementById('stat-today').textContent =
-    allSubmissions.filter(s => new Date(s.created_at).toDateString() === today).length;
+    active.filter(s => new Date(s.created_at).toDateString() === today).length;
 
   applyFilter();
+  renderChart(chartDays);
 }
+
+/* ══════════════════════════════════════════════════════════
+   ANALYTICS CHART  ── NEW
+   ══════════════════════════════════════════════════════════ */
+function renderChart(days) {
+  chartDays = days;
+  const labels = [];
+  const data   = [];
+
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toDateString();
+    labels.push(d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric' }));
+    data.push(allSubmissions.filter(s => !s.archived && new Date(s.created_at).toDateString() === dateStr).length);
+  }
+
+  const isDark   = document.documentElement.getAttribute('data-theme') === 'dark';
+  const textColor = isDark ? 'rgba(255,255,255,0.4)' : '#7a7a98';
+  const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)';
+
+  if (submissionsChart) {
+    submissionsChart.data.labels = labels;
+    submissionsChart.data.datasets[0].data = data;
+    submissionsChart.options.scales.x.ticks.color = textColor;
+    submissionsChart.options.scales.y.ticks.color = textColor;
+    submissionsChart.options.scales.x.grid.color  = gridColor;
+    submissionsChart.options.scales.y.grid.color  = gridColor;
+    submissionsChart.update();
+    return;
+  }
+
+  const ctx = document.getElementById('submissions-chart').getContext('2d');
+  submissionsChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Submissions',
+        data,
+        backgroundColor: 'rgba(201,168,76,0.2)',
+        borderColor:     '#c9a84c',
+        borderWidth:     1.5,
+        borderRadius:    3,
+        hoverBackgroundColor: 'rgba(201,168,76,0.4)',
+      }]
+    },
+    options: {
+      responsive:          true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.parsed.y} submission${ctx.parsed.y !== 1 ? 's' : ''}`
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid:  { color: gridColor },
+          ticks: { color: textColor, font: { family: 'Raleway', size: 11 } }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: { stepSize: 1, color: textColor, font: { family: 'Raleway', size: 11 } },
+          grid:  { color: gridColor }
+        }
+      }
+    }
+  });
+}
+
+// Chart range buttons
+document.querySelectorAll('.chart-range-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.chart-range-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderChart(parseInt(btn.dataset.days));
+  });
+});
+
+/* ══════════════════════════════════════════════════════════
+   FILTERS & SEARCH
+   ══════════════════════════════════════════════════════════ */
+document.getElementById('filter-group').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter = btn.dataset.filter;
+  applyFilter();
+});
+
+document.getElementById('search-input').addEventListener('input', applyFilter);
 
 function applyFilter() {
   const search = (document.getElementById('search-input').value || '').toLowerCase().trim();
@@ -305,11 +473,12 @@ function applyFilter() {
     const cat = (s.data['inquiry-category'] || '').toLowerCase();
 
     const matchFilter =
-      activeFilter === 'all'        ? true :
-      activeFilter === 'new'        ? !s.read :
-      activeFilter === 'tuition'    ? cat.includes('tuition') :
-      activeFilter === 'academics'  ? cat === 'academics' :
-      activeFilter === 'scholarship'? cat === 'scholarship' : true;
+      activeFilter === 'all'         ? !s.archived :
+      activeFilter === 'new'         ? !s.read && !s.archived :
+      activeFilter === 'tuition'     ? cat.includes('tuition') && !s.archived :
+      activeFilter === 'academics'   ? cat === 'academics' && !s.archived :
+      activeFilter === 'scholarship' ? cat === 'scholarship' && !s.archived :
+      activeFilter === 'archived'    ? s.archived : true;
 
     const fullName = `${s.data['first-name']} ${s.data['last-name']}`.toLowerCase();
     const matchSearch = !search ||
@@ -344,12 +513,13 @@ function renderTable() {
     const dateStr = date.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
     const timeStr = date.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' });
     const boldRow = s.read ? '' : 'font-weight:600;';
+    const archivedBadge = s.archived ? '<span class="badge badge-archived" style="margin-left:6px">Archived</span>' : '';
 
     return `
       <tr data-id="${s.id}" style="${boldRow}">
         <td>${s.number}</td>
         <td>
-          <div class="td-name">${esc(s.data['first-name'])} ${esc(s.data['last-name'])}</div>
+          <div class="td-name">${esc(s.data['first-name'])} ${esc(s.data['last-name'])}${archivedBadge}</div>
           <div class="td-email">${esc(s.data.phone || '')}</div>
         </td>
         <td><div class="td-email">${s.data.email ? `<a href="https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(s.data.email)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline dotted;cursor:pointer" onclick="event.stopPropagation()">${esc(s.data.email)}</a>` : '—'}</div></td>
@@ -363,7 +533,7 @@ function renderTable() {
           </span>
         </td>
         <td>
-          <button class="action-btn view-btn" data-id="${s.id}" title="View">
+          <button class="action-btn view-btn" data-id="${s.id}" aria-label="View" title="View">
             <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
           </button>
         </td>
@@ -386,20 +556,6 @@ function showEmpty(msg) {
 }
 
 /* ══════════════════════════════════════════════════════════
-   FILTERS & SEARCH
-   ══════════════════════════════════════════════════════════ */
-document.getElementById('filter-group').addEventListener('click', e => {
-  const btn = e.target.closest('.filter-btn');
-  if (!btn) return;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  activeFilter = btn.dataset.filter;
-  applyFilter();
-});
-
-document.getElementById('search-input').addEventListener('input', applyFilter);
-
-/* ══════════════════════════════════════════════════════════
    MODAL
    ══════════════════════════════════════════════════════════ */
 function openModal(id) {
@@ -407,7 +563,7 @@ function openModal(id) {
   if (!s) return;
   activeModalId = id;
 
-  // Mark as read in Firestore
+  // Mark as read in Firestore automatically on open
   if (!s.read) {
     db.collection('inquiries').doc(id).update({ read: true });
   }
@@ -453,7 +609,19 @@ function openModal(id) {
     </div>
   `;
 
+  // Update button labels based on current state
+  document.getElementById('modal-mark-read').textContent = s.read ? 'Mark as Unread' : 'Mark as Read';
+  document.getElementById('modal-archive').textContent   = s.archived ? 'Unarchive' : 'Archive';
+
+  // Reset reply panel
+  document.getElementById('reply-panel').classList.remove('open');
+  document.getElementById('reply-textarea').value = '';
+  // Pre-fill a greeting in the reply box
+  document.getElementById('reply-textarea').value =
+    `Dear ${s.data['first-name']},\n\nThank you for reaching out to Lucban Christian School.\n\n`;
+
   document.getElementById('modal-overlay').classList.add('open');
+  document.body.classList.add('modal-open');
 }
 
 document.getElementById('modal-close').addEventListener('click', closeModal);
@@ -463,16 +631,44 @@ document.getElementById('modal-overlay').addEventListener('click', e => {
 
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('open');
+  document.body.classList.remove('modal-open');
   activeModalId = null;
 }
 
-// Toggle read/unread
+// Toggle read / unread
 document.getElementById('modal-mark-read').addEventListener('click', () => {
   const s = allSubmissions.find(x => x.id === activeModalId);
   if (s) {
     db.collection('inquiries').doc(s.id).update({ read: !s.read });
     closeModal();
   }
+});
+
+// ── NEW: Archive / Unarchive
+document.getElementById('modal-archive').addEventListener('click', () => {
+  const s = allSubmissions.find(x => x.id === activeModalId);
+  if (!s) return;
+  db.collection('inquiries').doc(s.id).update({ archived: !s.archived });
+  closeModal();
+});
+
+// ── NEW: Reply toggle
+document.getElementById('modal-reply-toggle').addEventListener('click', () => {
+  const panel = document.getElementById('reply-panel');
+  panel.classList.toggle('open');
+  if (panel.classList.contains('open')) {
+    document.getElementById('reply-textarea').focus();
+  }
+});
+
+// ── NEW: Send reply via Gmail
+document.getElementById('reply-send').addEventListener('click', () => {
+  const s = allSubmissions.find(x => x.id === activeModalId);
+  if (!s) return;
+  const body    = document.getElementById('reply-textarea').value;
+  const subject = 'Re: ' + (s.data.subject || 'Your Inquiry at LCS');
+  const url = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(s.data.email || '')}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.open(url, '_blank', 'noopener');
 });
 
 // Delete from Firestore
