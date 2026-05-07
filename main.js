@@ -16,7 +16,7 @@ const PROGRAMS = {
     grade: 'Age 3–4 years old',
     description: 'Our Nursery program is the first step in your child\'s educational journey at LCS. We create a warm, loving, and safe environment where children learn through structured play, songs, stories, and Bible-based activities.',
     objectives: 'Develop basic social skills, introduce concepts of letters, numbers, and shapes, build confidence, and nurture a love for God and learning from an early age.',
-    subjects: ['Bible Stories & Values', 'Language Readiness', 'Number Concepts', 'Arts & Crafts', 'Music & Movement', 'Physical Education', 'Science Exploration', 'Social Skills']
+    subjects: ['Godly Manners & Right Conduct (GMRC)', 'Filipino Reading and Literacy', 'English Reading and Literacy', 'Mathematics', 'Makabansa', 'Language']
   },
   kinder1: {
     icon: '📚',
@@ -25,7 +25,7 @@ const PROGRAMS = {
     grade: 'Age 4–5 years old',
     description: 'Kinder 1 builds upon the Nursery foundation with a more structured introduction to literacy and numeracy. Students engage in hands-on activities that integrate faith with foundational academic skills.',
     objectives: 'Strengthen literacy and numeracy readiness, develop fine motor skills, build friendship and community values, and deepen early understanding of biblical principles.',
-    subjects: ['Bible & Character Education', 'Filipino Literacy', 'English Literacy', 'Mathematics', 'Arts & Crafts', 'Music & Worship', 'Physical Education', 'Environmental Awareness']
+    subjects: ['Godly Manners & Right Conduct (GMRC)', 'Filipino Reading and Literacy', 'English Reading and Literacy', 'Mathematics', 'Makabansa', 'Language']
   },
   kinder2: {
     icon: '✏️',
@@ -34,7 +34,7 @@ const PROGRAMS = {
     grade: 'Age 5–6 years old',
     description: 'Kinder 2 prepares students for formal Grade 1 education. The curriculum includes reading readiness, writing, and foundational mathematics alongside Christian formation and character development.',
     objectives: 'Ensure students are academically and emotionally ready for elementary school, strengthen communication skills, and deepen commitment to God and community.',
-    subjects: ['Bible & Christian Living', 'Filipino Reading & Writing', 'English Reading & Writing', 'Mathematics', 'Science Readiness', 'Araling Panlipunan', 'MAPEH', 'Computer Basics']
+    subjects: ['Godly Manners & Right Conduct (GMRC)', 'Filipino Reading and Literacy', 'English Reading and Literacy', 'Mathematics', 'Makabansa', 'Language']
   },
   elementary: {
     icon: '🏫',
@@ -43,7 +43,7 @@ const PROGRAMS = {
     grade: 'Grade 1 – Grade 6',
     description: 'LCS Elementary School has been offering quality Christian education since 1995. The program follows the DepEd K–12 curriculum integrated with Bible-based values formation, producing well-rounded learners who love God and excel academically.',
     objectives: 'Develop strong academic foundations in all core subjects, form godly character and Christian values, cultivate critical thinking and creativity, and prepare students for Junior High School.',
-    subjects: ['Bible / Christian Living', 'Filipino', 'English', 'Mathematics', 'Science', 'Araling Panlipunan', 'MAPEH', 'ICT / Computer', 'EPP / TLE', 'Mother Tongue (Gr. 1–3)']
+    subjects: ['Christian Character Education/GMRC', 'Filipino', 'English', 'Mathematics', 'Science', 'Araling Panlipunan (Grade 4–6)', 'Music & Arts (Grade 4–6)', 'PE & Health (Grade 4–6)', 'ICT / Computer (Grade 4–6)', 'EPP / TLE', 'Makabansa (Grade 1–3)']
   },
   jhs: {
     icon: '🎓',
@@ -52,7 +52,7 @@ const PROGRAMS = {
     grade: 'Grade 7 – Grade 10',
     description: 'Established in 2016 through the partnership of LCS and the Kyungnam Layman\'s Association (KLA), our Junior High School program is DepEd recognized under S-007 s. 2019. It provides a transformative secondary education grounded in Christian faith and academic excellence.',
     objectives: 'Equip students with advanced academic knowledge, deepen spiritual maturity, develop leadership and life skills, and prepare graduates for Senior High School and beyond.',
-    subjects: ['Bible / Christian Living', 'Filipino', 'English', 'Mathematics', 'Science', 'Araling Panlipunan', 'MAPEH', 'TLE / Technology', 'Computer Science', 'Values Education']
+    subjects: ['Biblical Insights', 'Korean Language', 'Filipino', 'English', 'Mathematics', 'Science', 'Araling Panlipunan', 'Music & Arts', 'PE & Health', 'TLE / Technology', 'Computer Science', 'Values Education/GMRC']
   }
 };
 
@@ -410,6 +410,10 @@ window.prefillInquiry = function(programName) {
 
     /* ── Step 2: confirm → submit to Firebase ── */
     confirmBtn.onclick = function() {
+      if (typeof db === 'undefined') {
+        showToast('Still loading — please wait a moment and try again.', 'error');
+        return;
+      }
       confirmBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#0f2044;animation:spin 1s linear infinite"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg> Sending…';
       confirmBtn.disabled = true;
       backBtn.disabled    = true;
