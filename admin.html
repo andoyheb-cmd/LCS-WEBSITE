@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LCS Admin — Inquiry Dashboard</title>
+  <title>LCS Admin — Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Raleway:wght@300;400;500;600;700&family=Crimson+Pro:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="admin.css">
 </head>
@@ -50,7 +50,7 @@
       <div class="topbar-logo"><img src="logo.png" alt="LCS Logo"></div>
       <div class="topbar-name">
         LCS Admin
-        <span>Inquiry Dashboard</span>
+        <span>Dashboard</span>
       </div>
     </div>
     <div class="topbar-right">
@@ -98,7 +98,28 @@
         <div class="stat-card-num" id="stat-today">—</div>
         <div class="stat-card-label">Today</div>
       </div>
+      <div class="stat-card stat-card-subscribers">
+        <div class="stat-card-num" id="stat-subscribers">—</div>
+        <div class="stat-card-label">Newsletter Subscribers</div>
+      </div>
     </div>
+
+    <!-- ══ PAGE TABS ══ -->
+    <div class="page-tabs" id="page-tabs">
+      <button class="page-tab active" data-tab="inquiries">
+        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        Inquiries
+        <span class="tab-count" id="tab-count-inquiries">—</span>
+      </button>
+      <button class="page-tab" data-tab="subscribers">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Newsletter Subscribers
+        <span class="tab-count" id="tab-count-subscribers">—</span>
+      </button>
+    </div>
+
+    <!-- ══ INQUIRIES PANEL ══ -->
+    <div id="panel-inquiries">
 
     <!-- ── NEW: Analytics Chart ── -->
     <div class="chart-section" id="chart-section">
@@ -167,10 +188,56 @@
           </tr>
         </tbody>
       </table>
-    </div>
+    </div><!-- /.table-wrap -->
 
-  </div>
-</div>
+    </div><!-- /#panel-inquiries -->
+
+
+    <!-- ══ SUBSCRIBERS PANEL ══ -->
+    <div id="panel-subscribers" style="display:none">
+
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <h2>Newsletter Subscribers</h2>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" id="sub-search-input" placeholder="Search email…">
+          </div>
+          <button class="export-btn" id="sub-export-btn">
+            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            Export CSV
+          </button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Email Address</th>
+              <th>Subscribed On</th>
+              <th>Time</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="subscribers-tbody">
+            <tr><td colspan="5">
+              <div class="empty-state">
+                <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                <p>Loading subscribers…</p>
+              </div>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div><!-- /#panel-subscribers -->
+
+  </div><!-- /.dash-main -->
+</div><!-- /#dashboard -->
 
 
 <!-- ══════════════════════════════════════════════════════════
@@ -292,6 +359,7 @@ function doLogin() {
     document.getElementById('dashboard').style.display = 'block';
     err.style.display = 'none';
     loadSubmissions();
+    loadSubscribers();
   } else {
     err.style.display = 'block';
     document.getElementById('admin-pass').value = '';
@@ -301,7 +369,17 @@ function doLogin() {
 
 document.getElementById('logout-btn').addEventListener('click', () => {
   if (unsubscribe) { unsubscribe(); unsubscribe = null; }
+  if (subUnsubscribe) { subUnsubscribe(); subUnsubscribe = null; }
   if (submissionsChart) { submissionsChart.destroy(); submissionsChart = null; }
+  allSubscribers = []; filteredSubs = [];
+  document.getElementById('stat-subscribers').textContent = '—';
+  document.getElementById('tab-count-subscribers').textContent = '—';
+  document.getElementById('tab-count-inquiries').textContent = '—';
+  // Reset tabs to inquiries
+  activeTab = 'inquiries';
+  document.querySelectorAll('.page-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === 'inquiries'));
+  document.getElementById('panel-inquiries').style.display = '';
+  document.getElementById('panel-subscribers').style.display = 'none';
   document.getElementById('dashboard').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('admin-pass').value = '';
@@ -369,6 +447,9 @@ function renderAll() {
 
   applyFilter();
   renderChart(chartDays);
+  // Update inquiries tab count
+  const unread = allSubmissions.filter(s => !s.archived);
+  document.getElementById('tab-count-inquiries').textContent = unread.length;
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -714,6 +795,177 @@ function esc(str) {
     .replace(/&/g,'&amp;').replace(/</g,'&lt;')
     .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+
+/* ══════════════════════════════════════════════════════════
+   PAGE TABS
+   ══════════════════════════════════════════════════════════ */
+let activeTab = 'inquiries';
+
+document.getElementById('page-tabs').addEventListener('click', e => {
+  const btn = e.target.closest('.page-tab');
+  if (!btn) return;
+  const tab = btn.dataset.tab;
+  if (tab === activeTab) return;
+  activeTab = tab;
+  document.querySelectorAll('.page-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.getElementById('panel-inquiries').style.display  = tab === 'inquiries'   ? '' : 'none';
+  document.getElementById('panel-subscribers').style.display = tab === 'subscribers' ? '' : 'none';
+  if (tab === 'subscribers' && !subUnsubscribe) loadSubscribers();
+});
+
+/* ══════════════════════════════════════════════════════════
+   SUBSCRIBERS — State
+   ══════════════════════════════════════════════════════════ */
+let allSubscribers    = [];
+let filteredSubs      = [];
+let subUnsubscribe    = null;
+
+/* ══════════════════════════════════════════════════════════
+   LOAD SUBSCRIBERS — Real-time listener
+   ══════════════════════════════════════════════════════════ */
+function loadSubscribers() {
+  document.getElementById('subscribers-tbody').innerHTML = `
+    <tr><td colspan="5">
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        <p>Loading subscribers…</p>
+      </div>
+    </td></tr>`;
+
+  subUnsubscribe = db.collection('newsletter_subscribers')
+    .orderBy('subscribedAt', 'desc')
+    .onSnapshot(
+      snapshot => {
+        allSubscribers = snapshot.docs.map((doc, i) => {
+          const d = doc.data();
+          return {
+            id:    doc.id,
+            number: i + 1,
+            email: d.email || '',
+            subscribedAt: d.subscribedAt ? d.subscribedAt.toDate().toISOString() : new Date().toISOString(),
+          };
+        });
+        updateSubStats();
+        applySubFilter();
+      },
+      err => {
+        console.error('Subscribers Firestore error:', err);
+        document.getElementById('subscribers-tbody').innerHTML = `
+          <tr><td colspan="5">
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+              <p>Could not load subscribers. Check Firebase config.</p>
+            </div>
+          </td></tr>`;
+      }
+    );
+}
+
+function updateSubStats() {
+  const count = allSubscribers.length;
+  document.getElementById('stat-subscribers').textContent = count;
+  document.getElementById('tab-count-subscribers').textContent = count;
+  document.getElementById('tab-count-inquiries').textContent =
+    allSubmissions.filter(s => !s.archived).length;
+}
+
+/* ══════════════════════════════════════════════════════════
+   SUBSCRIBERS — Search & Filter
+   ══════════════════════════════════════════════════════════ */
+document.getElementById('sub-search-input').addEventListener('input', applySubFilter);
+
+function applySubFilter() {
+  const search = (document.getElementById('sub-search-input').value || '').toLowerCase().trim();
+  filteredSubs = allSubscribers.filter(s =>
+    !search || s.email.toLowerCase().includes(search)
+  );
+  renderSubscribersTable();
+}
+
+/* ══════════════════════════════════════════════════════════
+   SUBSCRIBERS — Render Table
+   ══════════════════════════════════════════════════════════ */
+function renderSubscribersTable() {
+  const tbody = document.getElementById('subscribers-tbody');
+
+  if (!filteredSubs.length) {
+    tbody.innerHTML = `
+      <tr><td colspan="5">
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          <p>No subscribers found.</p>
+        </div>
+      </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filteredSubs.map(s => {
+    const date    = new Date(s.subscribedAt);
+    const dateStr = date.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
+    const timeStr = date.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' });
+    return `
+      <tr>
+        <td>${s.number}</td>
+        <td>
+          <div class="td-name sub-email-cell">
+            <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:var(--gold);flex-shrink:0;margin-top:1px"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            <a href="https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(s.email)}"
+               target="_blank" rel="noopener"
+               style="color:inherit;text-decoration:underline dotted"
+               onclick="event.stopPropagation()">${esc(s.email)}</a>
+          </div>
+        </td>
+        <td class="td-date">${dateStr}</td>
+        <td class="td-date">${timeStr}</td>
+        <td>
+          <button class="action-btn sub-delete-btn" data-id="${s.id}" data-email="${esc(s.email)}"
+            aria-label="Delete subscriber" title="Delete">
+            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          </button>
+        </td>
+      </tr>`;
+  }).join('');
+
+  tbody.querySelectorAll('.sub-delete-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const email = btn.dataset.email;
+      const id    = btn.dataset.id;
+      if (!confirm(`Remove "${email}" from the newsletter list?`)) return;
+      db.collection('newsletter_subscribers').doc(id).delete()
+        .catch(err => console.error('Delete subscriber failed:', err));
+    });
+  });
+}
+
+/* ══════════════════════════════════════════════════════════
+   SUBSCRIBERS — Export CSV
+   ══════════════════════════════════════════════════════════ */
+document.getElementById('sub-export-btn').addEventListener('click', () => {
+  const headers = ['#', 'Email', 'Subscribed Date', 'Subscribed Time'];
+  const rows = filteredSubs.map(s => {
+    const date = new Date(s.subscribedAt);
+    return [
+      s.number,
+      s.email,
+      date.toLocaleDateString('en-PH'),
+      date.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' }),
+    ];
+  });
+
+  const csv = [headers, ...rows].map(r =>
+    r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')
+  ).join('\n');
+
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = `lcs-subscribers-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+});
+
+/* Also load subscribers at login so the stat card updates immediately */
+const _origLoadSubmissions = loadSubmissions;
+
 </script>
 
 
