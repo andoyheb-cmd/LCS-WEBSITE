@@ -1083,3 +1083,122 @@ body.modal-open {
 
 [data-theme="dark"] .action-btn { color: rgba(255,255,255,0.35); }
 [data-theme="dark"] .action-btn:hover { color: var(--gold-light); }
+
+/* ══════════════════════════════════════════════════════════
+   PAGE TABS (Inquiries / Subscribers)
+══════════════════════════════════════════════════════════ */
+.page-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 28px;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0;
+}
+
+.page-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  font-family: 'Raleway', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.page-tab svg {
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.page-tab:hover {
+  color: var(--navy);
+}
+
+.page-tab.active {
+  color: var(--navy);
+  border-bottom-color: var(--gold);
+}
+
+.tab-count {
+  background: var(--border);
+  color: var(--text-muted);
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+  min-width: 22px;
+  text-align: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.page-tab.active .tab-count {
+  background: var(--gold);
+  color: var(--navy);
+}
+
+/* ── Subscribers stat card accent ── */
+.stat-card-subscribers {
+  border-top-color: #5b21b6;
+}
+
+.stat-card-subscribers .stat-card-num {
+  color: #5b21b6;
+}
+
+/* ── Subscriber email cell ── */
+.sub-email-cell {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* ── Subscriber delete button (red on hover) ── */
+.sub-delete-btn:hover {
+  color: var(--red) !important;
+}
+
+/* ── Stats row: 5 columns when subscriber card is present ── */
+@media (min-width: 900px) {
+  .stats-row {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* ── Dark mode for tabs ── */
+[data-theme="dark"] .page-tabs {
+  border-bottom-color: rgba(255,255,255,0.08);
+}
+
+[data-theme="dark"] .page-tab:hover {
+  color: var(--gold-light);
+}
+
+[data-theme="dark"] .page-tab.active {
+  color: var(--gold-light);
+  border-bottom-color: var(--gold);
+}
+
+[data-theme="dark"] .tab-count {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.4);
+}
+
+[data-theme="dark"] .page-tab.active .tab-count {
+  background: var(--gold);
+  color: var(--navy);
+}
+
+[data-theme="dark"] .stat-card-subscribers .stat-card-num {
+  color: #a78bfa;
+}
