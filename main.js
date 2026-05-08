@@ -376,6 +376,152 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // ===========================
+// NEWSLETTER SUBSCRIBE
+// ===========================
+function submitNewsletter(event) {
+    event.preventDefault();
+
+    const emailInput = document.getElementById('nl-email');
+    const btn        = document.getElementById('nl-btn');
+    const success    = document.getElementById('nl-success');
+
+    if (!emailInput || !btn || !success) return;
+
+    const email = emailInput.value.trim();
+    if (!email) return;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        emailInput.style.borderColor = '#e74c3c';
+        emailInput.focus();
+        return;
+    }
+    emailInput.style.borderColor = '';
+
+    btn.disabled = true;
+    btn.textContent = 'Subscribing…';
+
+    // Prevent duplicates
+    db.collection('newsletter_subscribers')
+        .where('email', '==', email)
+        .get()
+        .then(snapshot => {
+            if (!snapshot.empty) {
+                // Already subscribed — show success silently
+                success.style.display = 'block';
+                emailInput.value = '';
+                btn.disabled = false;
+                btn.innerHTML = `Subscribe <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>`;
+                return Promise.resolve();
+            }
+            // Save — field names match what admin.html reads (email + subscribedAt)
+            return db.collection('newsletter_subscribers').add({
+                email:        email,
+                subscribedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        })
+        .then(() => {
+            success.style.display = 'block';
+            emailInput.value = '';
+            btn.disabled = false;
+            btn.innerHTML = `Subscribe <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>`;
+        })
+        .catch(err => {
+            console.error('Newsletter subscribe error:', err);
+            btn.disabled = false;
+            btn.textContent = 'Try Again';
+        });
+}
+
+// ===========================
+// INQUIRY CATEGORY TABS
+// ===========================
+document.addEventListener('DOMContentLoaded', function () {
+    const catBtns = document.querySelectorAll('.cat-btn');
+    catBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            catBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+});
+
+// ===========================
+// INQUIRY FORM SUBMIT
+// ===========================
+document.addEventListener('DOMContentLoaded', function () {
+    const submitBtn = document.getElementById('iq-submit');
+    if (!submitBtn) return;
+
+    submitBtn.addEventListener('click', function () {
+        const firstName = (document.getElementById('iq-firstname')?.value || '').trim();
+        const lastName  = (document.getElementById('iq-lastname')?.value  || '').trim();
+        const email     = (document.getElementById('iq-email')?.value     || '').trim();
+        const phone     = (document.getElementById('iq-phone')?.value     || '').trim();
+        const relation  = (document.getElementById('iq-relation')?.value  || '').trim();
+        const gradeLevel = (document.getElementById('iq-level')?.value    || '').trim();
+        const subject   = (document.getElementById('iq-subject')?.value   || '').trim();
+        const message   = (document.getElementById('iq-message')?.value   || '').trim();
+
+        // Get active category tab
+        const activeCat = document.querySelector('.cat-btn.active');
+        const category  = activeCat ? activeCat.textContent.trim() : 'Other';
+
+        // Validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!firstName || !lastName || !email || !subject || !message) {
+            alert('Please fill in all required fields (marked with *).');
+            return;
+        }
+        if (!emailRegex.test(email)) {
+            alert('Please enter a valid email address.');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting…';
+
+        // ⚠️ Field names MUST match what admin.html reads from Firestore:
+        //    d.firstName, d.lastName, d.email, d.phone, d.category,
+        //    d.relation, d.gradeLevel, d.subject, d.message, d.createdAt
+        db.collection('inquiries').add({
+            firstName:   firstName,
+            lastName:    lastName,
+            email:       email,
+            phone:       phone,
+            relation:    relation,
+            gradeLevel:  gradeLevel,
+            category:    category,
+            subject:     subject,
+            message:     message,
+            read:        false,
+            archived:    false,
+            createdAt:   firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> Submit Inquiry`;
+            ['iq-firstname','iq-lastname','iq-email','iq-phone','iq-subject','iq-message'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            const selects = ['iq-relation','iq-level'];
+            selects.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.selectedIndex = 0;
+            });
+            alert('✅ Inquiry submitted! We will respond within 1–2 business days.');
+        })
+        .catch(err => {
+            console.error('Inquiry submit error:', err);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> Submit Inquiry`;
+            alert('Something went wrong. Please try again.');
+        });
+    });
+});
+
+// ===========================
 // SCROLL REVEAL ANIMATION
 // ===========================
 document.addEventListener('DOMContentLoaded', function () {
