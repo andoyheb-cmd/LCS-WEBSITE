@@ -4,32 +4,36 @@ const dropdownMenu = document.getElementById('dropdownMenu');
 
 let hoverTimeout;
 
-userDropdown.addEventListener('mouseenter', () => {
-    clearTimeout(hoverTimeout);
-    dropdownMenu.classList.add('show');
-});
+if (userDropdown && dropdownMenu) {
+    userDropdown.addEventListener('mouseenter', () => {
+        clearTimeout(hoverTimeout);
+        dropdownMenu.classList.add('show');
+    });
 
-userDropdown.addEventListener('mouseleave', () => {
-    hoverTimeout = setTimeout(() => {
-        dropdownMenu.classList.remove('show');
-    }, 300);
-});
+    userDropdown.addEventListener('mouseleave', () => {
+        hoverTimeout = setTimeout(() => {
+            dropdownMenu.classList.remove('show');
+        }, 300);
+    });
+}
 
 const toolDropdown = document.getElementById('toolDropdown');
 const toolMenu = document.getElementById('toolDropdownMenu');
 
 let toolTimeout;
 
-toolDropdown.addEventListener('mouseenter', () => {
-    clearTimeout(toolTimeout);
-    toolMenu.classList.add('show');
-});
+if (toolDropdown && toolMenu) {
+    toolDropdown.addEventListener('mouseenter', () => {
+        clearTimeout(toolTimeout);
+        toolMenu.classList.add('show');
+    });
 
-toolDropdown.addEventListener('mouseleave', () => {
-    toolTimeout = setTimeout(() => {
-        toolMenu.classList.remove('show');
-    }, 300);
-});
+    toolDropdown.addEventListener('mouseleave', () => {
+        toolTimeout = setTimeout(() => {
+            toolMenu.classList.remove('show');
+        }, 300);
+    });
+}
 
 const campusMap = document.getElementById("campusMap");
 
@@ -368,5 +372,26 @@ document.addEventListener('DOMContentLoaded', function () {
             const isChecked = this.checked;
             console.log('Layer "' + layer + '" is now ' + (isChecked ? 'ON' : 'OFF'));
         });
+    });
+});
+
+// ===========================
+// SCROLL REVEAL ANIMATION
+// ===========================
+document.addEventListener('DOMContentLoaded', function () {
+    const revealObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                revealObserver.unobserve(entry.target); // animate once only
+            }
+        });
+    }, {
+        threshold: 0.12,
+        rootMargin: '0px 0px -40px 0px'
+    });
+
+    document.querySelectorAll('.reveal').forEach(function (el) {
+        revealObserver.observe(el);
     });
 });
