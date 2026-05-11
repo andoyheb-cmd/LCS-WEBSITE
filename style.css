@@ -1578,19 +1578,30 @@ textarea:focus-visible {
 
 .eslide {
   min-width: 100%; display: grid; grid-template-columns: 1fr 1fr;
-  min-height: 420px; flex-shrink: 0;
+  height: 420px; flex-shrink: 0; overflow: hidden;
 }
 
 .eslide-img {
   position: relative; display: flex; align-items: center;
-  justify-content: center; font-size: 5rem;
+  justify-content: center; font-size: 5rem; overflow: hidden;
 }
 .eslide-img span { opacity: 0.7; }
 
 .eslide-body {
   padding: 48px 44px; display: flex; flex-direction: column;
   justify-content: center; background: var(--cream);
+  overflow: hidden;
 }
+
+.event-meta { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+.event-date { font-family: 'Raleway', sans-serif; font-size: 0.75rem; font-weight: 600; color: var(--text-muted); letter-spacing: 0.08em; }
+.event-tag { font-family: 'Raleway', sans-serif; font-size: 0.7rem; font-weight: 700; background: var(--gold); color: var(--white); padding: 2px 8px; border-radius: 2px; letter-spacing: 0.05em; text-transform: uppercase; }
+.event-title { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--navy); margin: 0 0 10px; line-height: 1.3; }
+.event-excerpt { font-size: 0.92rem; color: var(--text-muted); line-height: 1.65; margin: 0 0 18px; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.event-badge { position: absolute; top: 16px; left: 16px; background: var(--gold); color: var(--white); font-family: 'Raleway', sans-serif; font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 2px; letter-spacing: 0.06em; text-transform: uppercase; }
+.event-readmore { display: inline-flex; align-items: center; gap: 4px; font-family: 'Raleway', sans-serif; font-size: 0.82rem; font-weight: 700; color: var(--navy); text-decoration: none; letter-spacing: 0.05em; text-transform: uppercase; transition: gap 0.2s; margin-top: auto; }
+.event-readmore:hover { gap: 8px; }
+.event-readmore svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
 
 .events-controls {
   display: flex; align-items: center; justify-content: space-between;
