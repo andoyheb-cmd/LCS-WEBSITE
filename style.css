@@ -1573,12 +1573,13 @@ textarea:focus-visible {
 ══════════════════════════════════════════════════════════ */
 #events { background: var(--white); padding: 100px 5%; scroll-margin-top: 96px; }
 
-.events-slideshow { overflow: hidden; border: 1px solid var(--cream-dark); border-radius: 2px; }
-.events-track { display: flex; width: 100%; transition: transform 0.5s cubic-bezier(0.4,0,0.2,1); will-change: transform; }
+.events-slideshow { overflow: hidden; border: 1px solid var(--cream-dark); border-radius: 2px; position: relative; }
+.events-track { display: flex; transition: transform 0.5s cubic-bezier(0.4,0,0.2,1); will-change: transform; }
 
 .eslide {
-  flex: 0 0 100%; width: 100%; display: grid; grid-template-columns: 1fr 1fr;
+  flex-shrink: 0; display: grid; grid-template-columns: 1fr 1fr;
   height: 420px; overflow: hidden;
+  /* width is set by JS to slideshow.offsetWidth */
 }
 
 .eslide-img {
@@ -1590,7 +1591,7 @@ textarea:focus-visible {
 
 .eslide-body {
   padding: 48px 44px; display: flex; flex-direction: column; align-items: flex-start;
-  justify-content: center; background: var(--cream); overflow: hidden; gap: 0;
+  justify-content: center; background: var(--cream); overflow: hidden;
 }
 
 .event-meta { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
