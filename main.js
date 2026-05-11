@@ -546,13 +546,22 @@ document.addEventListener('DOMContentLoaded', function () {
 // EVENTS SLIDESHOW
 // ===========================
 (function () {
+  const slideshow = document.querySelector('.events-slideshow');
   const track = document.getElementById('events-track');
   const dotsEl = document.getElementById('eslide-dots');
   const counter = document.getElementById('eslide-counter');
-  if (!track || !dotsEl || !counter) return;
+  if (!track || !dotsEl || !counter || !slideshow) return;
 
   const total = track.children.length;
   let cur = 0, timer;
+
+  // Set each slide to the exact pixel width of the container — no CSS % guesswork
+  function setWidths() {
+    const w = slideshow.offsetWidth;
+    Array.from(track.children).forEach(s => s.style.width = w + 'px');
+  }
+  setWidths();
+  window.addEventListener('resize', () => { setWidths(); go(cur); });
 
   const dots = Array.from({ length: total }, (_, i) => {
     const d = document.createElement('button');
@@ -565,7 +574,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function go(n) {
     cur = (n + total) % total;
-    track.style.transform = 'translateX(-' + (cur * 100) + '%)';
+    track.style.transform = 'translateX(-' + (cur * slideshow.offsetWidth) + 'px)';
     dots.forEach((d, i) => d.classList.toggle('active', i === cur));
     counter.textContent = (cur + 1) + ' / ' + total;
     resetTimer();
