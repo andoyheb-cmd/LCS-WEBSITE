@@ -1571,206 +1571,60 @@ textarea:focus-visible {
 /* ══════════════════════════════════════════════════════════
    EVENTS & NEWS
 ══════════════════════════════════════════════════════════ */
-#events {
-  background: var(--white);
-  padding: 100px 5%;
-  scroll-margin-top: 96px;
+#events { background: var(--white); padding: 100px 5%; scroll-margin-top: 96px; }
+
+.events-slideshow { overflow: hidden; border: 1px solid var(--cream-dark); }
+.events-track { display: flex; transition: transform 0.5s cubic-bezier(0.4,0,0.2,1); }
+
+.eslide {
+  min-width: 100%; display: grid; grid-template-columns: 1fr 1fr;
+  min-height: 420px; flex-shrink: 0;
 }
 
-.events-header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 32px;
-  flex-wrap: wrap;
-  margin-bottom: 56px;
+.eslide-img {
+  position: relative; display: flex; align-items: center;
+  justify-content: center; font-size: 5rem;
+}
+.eslide-img span { opacity: 0.7; }
+
+.eslide-body {
+  padding: 48px 44px; display: flex; flex-direction: column;
+  justify-content: center; background: var(--cream);
 }
 
-.events-intro {
-  color: var(--text-mid);
-  font-size: 1.21rem;
-  line-height: 1.8;
-  max-width: 580px;
-  margin-top: 8px;
+.events-controls {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 0 0; flex-wrap: wrap; gap: 12px;
 }
 
-.events-fb-btn {
-  color: var(--navy);
-  border-color: var(--navy);
-  white-space: nowrap;
-  flex-shrink: 0;
+.eslide-dots { display: flex; gap: 8px; align-items: center; }
+
+.eslide-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--border);
+  cursor: pointer; transition: all 0.25s; border: none; padding: 0;
+}
+.eslide-dot.active { background: var(--gold); width: 24px; border-radius: 4px; }
+
+.eslide-counter {
+  font-family: 'Raleway', sans-serif; font-size: 0.78rem; font-weight: 600;
+  letter-spacing: 0.1em; color: var(--text-muted);
 }
 
-.events-fb-btn svg { fill: var(--navy); }
+.eslide-arrows { display: flex; gap: 10px; }
 
-.events-fb-btn:hover {
-  background: var(--navy);
-  color: var(--white);
-  border-color: var(--navy);
+.eslide-arr {
+  width: 44px; height: 44px; border: 1px solid var(--border); background: transparent;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; color: var(--navy);
 }
-
-.events-fb-btn:hover svg { fill: var(--white); }
-
-.events-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-}
-
-.event-card {
-  background: var(--cream);
-  border: 1px solid var(--cream-dark);
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.25s, box-shadow 0.25s;
-}
-
-.event-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 16px 48px rgba(15,32,68,0.12);
-}
-
-.event-card[data-event="featured"] {
-  grid-row: span 2;
-}
-
-.event-badge {
-  position: absolute;
-  top: 16px; left: 16px;
-  background: var(--gold);
-  color: var(--navy);
-  font-family: 'Raleway', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 4px 12px;
-  z-index: 2;
-}
-
-.event-img-wrap {
-  width: 100%;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.event-card[data-event="featured"] .event-img-wrap {
-  height: 260px;
-}
-
-.event-img-wrap:not(.event-card[data-event="featured"] .event-img-wrap) {
-  height: 160px;
-}
-
-.event-img-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 3rem;
-}
-
-.event-placeholder-1 { background: linear-gradient(135deg, #1a3260 0%, #243d78 100%); }
-.event-placeholder-2 { background: linear-gradient(135deg, #0f2044 0%, #1a3260 100%); }
-.event-placeholder-3 { background: linear-gradient(135deg, #243d78 0%, #1a3260 100%); }
-.event-placeholder-4 { background: linear-gradient(135deg, #1a3260 0%, #0f2044 100%); }
-
-.event-body {
-  padding: 28px 28px 24px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-.event-meta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-}
-
-.event-date {
-  font-family: 'Raleway', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--gold);
-}
-
-.event-tag {
-  font-family: 'Raleway', sans-serif;
-  font-size: 0.69rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  background: var(--cream-dark);
-  padding: 2px 8px;
-}
-
-.event-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.38rem;
-  font-weight: 700;
-  color: var(--navy);
-  line-height: 1.3;
-  margin-bottom: 12px;
-}
-
-.event-card[data-event="featured"] .event-title {
-  font-size: 1.61rem;
-}
-
-.event-excerpt {
-  font-family: 'Crimson Pro', serif;
-  font-size: 1.09rem;
-  color: var(--text-mid);
-  line-height: 1.7;
-  flex: 1;
-}
-
-.event-readmore {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-family: 'Raleway', sans-serif;
-  font-size: 0.83rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--navy);
-  text-decoration: none;
-  margin-top: 20px;
-  transition: color 0.2s, gap 0.2s;
-  align-self: flex-start;
-  border-bottom: 1px solid var(--gold);
-  padding-bottom: 2px;
-}
-
-.event-readmore svg {
-  width: 14px; height: 14px;
-  fill: currentColor;
-  transition: transform 0.2s;
-}
-
-.event-readmore:hover { color: var(--gold); gap: 8px; }
-.event-readmore:hover svg { transform: translateX(3px); }
+.eslide-arr:hover { background: var(--navy); border-color: var(--navy); color: var(--white); }
+.eslide-arr svg { width: 18px; height: 18px; fill: currentColor; }
 
 @media (max-width: 900px) {
-  .events-grid { grid-template-columns: 1fr; }
-  .event-card[data-event="featured"] { grid-row: auto; }
-  .event-card[data-event="featured"] .event-img-wrap { height: 200px; }
+  .eslide { grid-template-columns: 1fr; }
+  .eslide-img { min-height: 200px; }
+  .eslide-body { padding: 28px 24px; }
 }
-
-@media (max-width: 600px) {
-  .events-header { flex-direction: column; align-items: flex-start; }
-}
-
 
 /* ══════════════════════════════════════════════════════════
    NEWSLETTER BAR
