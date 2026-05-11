@@ -541,3 +541,45 @@ document.addEventListener('DOMContentLoaded', function () {
         revealObserver.observe(el);
     });
 });
+
+// ===========================
+// EVENTS SLIDESHOW
+// ===========================
+(function () {
+  const track = document.getElementById('events-track');
+  const dotsEl = document.getElementById('eslide-dots');
+  const counter = document.getElementById('eslide-counter');
+  if (!track || !dotsEl || !counter) return;
+
+  const total = track.children.length;
+  let cur = 0, timer;
+
+  const dots = Array.from({ length: total }, (_, i) => {
+    const d = document.createElement('button');
+    d.className = 'eslide-dot' + (i === 0 ? ' active' : '');
+    d.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+    d.addEventListener('click', () => go(i));
+    dotsEl.appendChild(d);
+    return d;
+  });
+
+  function go(n) {
+    cur = (n + total) % total;
+    track.style.transform = 'translateX(-' + (cur * 100) + '%)';
+    dots.forEach((d, i) => d.classList.toggle('active', i === cur));
+    counter.textContent = (cur + 1) + ' / ' + total;
+    resetTimer();
+  }
+
+  function resetTimer() {
+    clearInterval(timer);
+    timer = setInterval(() => go(cur + 1), 5000);
+  }
+
+  document.getElementById('eslide-prev').addEventListener('click', () => go(cur - 1));
+  document.getElementById('eslide-next').addEventListener('click', () => go(cur + 1));
+  track.addEventListener('mouseenter', () => clearInterval(timer));
+  track.addEventListener('mouseleave', resetTimer);
+
+  resetTimer();
+})();
